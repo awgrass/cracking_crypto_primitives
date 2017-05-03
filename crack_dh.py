@@ -7,12 +7,13 @@ y = 0x0344ff810a572
 g = 0xd
 p = 0x1f99a9e646fb9
 
+
 """y = 10
 g = 5
 p = 15"""
 
-thresh1 = float(p)/3.0
-thresh2 = float(2*p)/3.0
+thresh1 = p//3
+thresh2 = (2*p)//3
 
 def egcd(a, b):
     if a == 0:
@@ -60,21 +61,26 @@ def find_cycle():
         rk, ak, bk = hash(hash((rk, ak, bk)))
     return (aj, bj), (ak, bk)
 
+
+
 def find_x(aj, ak, bj, bk):
     new_aj_ak = (aj - ak)
     new_bk_bj = (bk - bj)
+ #   print (new_aj_ak)
+ #   print (new_bk_bj)
     modulus = p - 1
     inv = modinv(new_aj_ak, modulus)
     while inv is None:
         divisor = gcd(new_aj_ak, modulus)
-        new_aj_ak /= divisor
-        new_bk_bj /= divisor
-        modulus /= divisor
+        new_aj_ak //= divisor
+        new_bk_bj //= divisor
+        modulus //= divisor
         inv = modinv(new_aj_ak, modulus)
     x = ((new_bk_bj) * inv) % (modulus)
+#    print ("x is " + str(x))
     i = 0
     while True: 
-        if pow(g, x + (i*p), p) == y:
+        if pow(g, x + (i*modulus), p) == y:
             print("FOUND!")
             print(x + (i*p))
             break
@@ -84,5 +90,10 @@ def find_x(aj, ak, bj, bk):
 
 if __name__ == "__main__":
     j, k = find_cycle()
-    print("we found cycle ({}, {})".format(j, k))
+    
+    """a_j = 453745029069002
+    a_k = 28585414160834
+    b_j = 33415581767935
+    b_k = 303036597860431"""
+    #print("we found cycle ({}, {})".format(j, k))
     find_x(j[0], k[0], j[1], k[1])

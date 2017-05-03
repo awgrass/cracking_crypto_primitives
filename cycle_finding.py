@@ -74,7 +74,7 @@ def find_x(aj, ak, bj, bk):
     x = ((new_bk_bj) * inv) % (modulus)
     i = 0
     while True: 
-        if pow(g, x + (i*p), p) == y:
+        if pow(g, x + (i*modulus), p) == y:
             print("FOUND!")
             print(x + (i*p))
             break
