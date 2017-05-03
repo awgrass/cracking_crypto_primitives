@@ -1,13 +1,15 @@
 from hashlib import sha256
 from sys import exit
 
+from fractions import gcd
+
 y = 10029
 g = 2
 p = 18461
 
-#y = 16
-#g = 5
-#p = 23
+"""y = 10
+g = 5
+p = 15"""
 
 thresh1 = float(p)/3.0
 thresh2 = float(2*p)/3.0
@@ -53,34 +55,33 @@ def find_cycle():
     rj, aj, bj = hash((1, 0, 0))
     rk, ak, bk = hash((rj, aj, bj))
 
-    print ("rj {} aj {} bj {}".format(rj, aj, bj))
-    print ("rk {} ak {} bk {}".format(rk, ak, bk))
-
     while rj != rk:
         rj, aj, bj = hash((rj, aj, bj))
         rk, ak, bk = hash(hash((rk, ak, bk)))
     return (aj, bj), (ak, bk)
 
 def find_x(aj, ak, bj, bk):
-    new_aj_ak = aj - ak
+    new_aj_ak = -(aj - ak)
+    new_bk_bj = -(bk - bj)
     modulus = p - 1
     inv = modinv(new_aj_ak, modulus)
-    if(inv is None):
-        ggT = gcd(new_aj_ak, modulus)
-        new_aj_ak /= ggT
-
-    else:
-
-    print (inv)
-    print(((aj - ak) * inv) % (p - 1))
-    x = ((bk - bj) * inv) % (p - 1)
-    if (y == (g**x) % p):
-        print("FOUND!")
-        print(x)
+    while inv is None:
+        divisor = gcd(new_aj_ak, modulus)
+        new_aj_ak /= divisor
+        new_bk_bj /= divisor
+        modulus /= divisor
+        inv = modinv(new_aj_ak, modulus)
+    x = ((new_bk_bj) * inv) % (modulus)
+    i = 0
+    while True: 
+        if pow(g, x + (i*p), p) == y:
+            print("FOUND!")
+            print(x + (i*p))
+            break
+        i = i + 1
 
 
 
 if __name__ == "__main__":
     j, k = find_cycle()
-    print ("{} {}".format(j,k))
     find_x(j[0], k[0], j[1], k[1])
