@@ -1,6 +1,5 @@
 from hashlib import sha256
 from sys import exit
-from fractions import gcd
 
 y = 10029
 g = 2
@@ -12,6 +11,17 @@ p = 18461
 
 thresh1 = float(p)/3.0
 thresh2 = float(2*p)/3.0
+
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def modinv(a, m):
+    g, x, y = egcd(a, m)
+    return None if (g != 1) else (x % m)
 
 def hash(input):
     #return sha256(str(input).encode("utf8")).hexdigest()[0:hash_length]
@@ -52,7 +62,18 @@ def find_cycle():
     return (aj, bj), (ak, bk)
 
 def find_x(aj, ak, bj, bk):
+    new_aj_ak = aj - ak
+    modulus = p - 1
+    inv = modinv(new_aj_ak, modulus)
+    if(inv is None):
+        ggT = gcd(new_aj_ak, modulus)
+        new_aj_ak /= ggT
 
+    else:
+
+    print (inv)
+    print(((aj - ak) * inv) % (p - 1))
+    x = ((bk - bj) * inv) % (p - 1)
     if (y == (g**x) % p):
         print("FOUND!")
         print(x)
