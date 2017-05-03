@@ -1,4 +1,6 @@
 from math import floor
+from fractions import gcd
+from random import randint
 import sys
 
 UTF_8_MAX = 0x10FFF
@@ -69,7 +71,23 @@ if __name__ == "__main__":
     pub_key = (nominator, denominator)
     cipher = encrypt(message, pub_key)
     l = fraction_expansion(nominator, denominator)
+    d = 0
     for x in get_nth_convergent(l):
         if decrypt(cipher, (x[1], denominator)) == message:
-            print ("FOUND: " + str(x))
-            sys.exit()
+            d = x[1]
+            break
+    print("found d={}!\nnow computing p,q....".format(d))
+
+    ed_1 = ((pub_key[0] * d) - 1)
+    while ed_1 % 2 == 0:
+        ed_1 //= 2
+
+    for x in range(2, 10000000000, 2):
+        if gcd(x, pub_key[1]) == 1:
+            y = pow(x, (ed_1), pub_key[1])
+            if y != 1:
+                p = gcd(y-1, pub_key[1])
+                q = pub_key[1] // p
+                if (p*q == pub_key[1]):
+                    print("p={}\nq={}".format(p, q))
+                    break

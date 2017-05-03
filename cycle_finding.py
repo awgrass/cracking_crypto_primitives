@@ -61,27 +61,30 @@ def find_cycle():
     return (aj, bj), (ak, bk)
 
 def find_x(aj, ak, bj, bk):
-    new_aj_ak = -(aj - ak)
-    new_bk_bj = -(bk - bj)
+    new_aj_ak = abs(aj - ak)
+    new_bk_bj = abs(bk - bj)
+    print("difference a {}, difference b {}".format(new_aj_ak, new_bk_bj))
     modulus = p - 1
     inv = modinv(new_aj_ak, modulus)
-    while inv is None:
+    if inv is None:
         divisor = gcd(new_aj_ak, modulus)
         new_aj_ak /= divisor
         new_bk_bj /= divisor
         modulus /= divisor
+        print("updated a {} modulus {}".format(new_aj_ak, modulus))
         inv = modinv(new_aj_ak, modulus)
+
     x = ((new_bk_bj) * inv) % (modulus)
+    print("my x is " + str(x))
     i = 0
     while True: 
         if pow(g, x + (i*modulus), p) == y:
             print("FOUND!")
-            print(x + (i*p))
+            print(x + (i*modulus))
             break
         i = i + 1
 
-
-
 if __name__ == "__main__":
     j, k = find_cycle()
+    print("we got {} and {}".format(j, k))
     find_x(j[0], k[0], j[1], k[1])

@@ -82,7 +82,7 @@ def find_x(aj, ak, bj, bk):
     while True: 
         if pow(g, x + (i*modulus), p) == y:
             print("FOUND!")
-            print(x + (i*p))
+            print(x + (i*modulus))
             break
         i = i + 1
 
